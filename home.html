@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Learning JS</title>
+  </head>
+  <body>
+    <main>
+      <input type="text" id="Greeting" placeholder="Create New Task..." />
+      <input type="date" id="dateID" />
+      <button
+        onclick="addGreeting()"
+        style="
+          background-color: red;
+          color: White;
+          font-size: 16px;
+          font-family: 'Times New Roman', Times, serif;
+          cursor: pointer;
+        "
+      >
+        Create Task
+      </button>
+      <p
+        style="
+          text-decoration: underline;
+          font-size: 36px;
+          font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+          margin-top: 10px;
+          margin-bottom: 10px;
+        "
+      >
+        CURRENT TASKS:
+      </p>
+      <div id="greetingsPrint"></div>
+    </main>
+    <script>
+      // Classic Hello World
+      let greetings = [];
+
+      function printHelloWorld(text, index) {
+        const element = document.createElement("div");
+        element.textContent =
+          "Task " +
+          (index + 1) +
+          ": " +
+          text.toDo +
+          " | Due Date: " +
+          text.dueDate;
+        element.setAttribute("style", "margin-bottom: 5px");
+        const greetingDiv = document.getElementById("greetingsPrint");
+
+        const deleteTask = document.createElement("button");
+        deleteTask.innerText = "Delete";
+        deleteTask.style.marginLeft = "5px";
+        deleteTask.style.cursor = "pointer";
+        deleteTask.addEventListener("click", removeTask);
+        deleteTask.id = text.id;
+        element.appendChild(deleteTask);
+        greetingDiv.appendChild(element);
+      }
+
+      function renderAllGreetings() {
+        //MAKE SURE WE WIPE THE SCREEN BEFORE.
+        document.getElementById("greetingsPrint").innerHTML = "";
+        greetings.forEach(printHelloWorld);
+      }
+
+      function removeTask(event) {
+        console.log(event);
+        const toBeDeleted = event.target.id;
+        greetings = greetings.filter(function (item) {
+          if (item.id === toBeDeleted) {
+            return false;
+          } else {
+            return true;
+          }
+        });
+        renderAllGreetings();
+      }
+
+      function addGreeting() {
+        let text = document.getElementById("Greeting");
+        text = text.value;
+        let datePicked = document.getElementById("dateID");
+        datePicked = datePicked.value;
+
+        greetings.push({
+          toDo: text,
+          dueDate: datePicked,
+          id: "" + new Date().getTime(),
+        });
+        renderAllGreetings();
+      }
+    </script>
+  </body>
+</html>
