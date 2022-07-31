@@ -11,7 +11,7 @@
       <input type="text" id="Greeting" placeholder="Create New Task..." />
       <input type="date" id="dateID" />
       <button
-        onclick="addGreeting()"
+        onclick="addToDo()"
         style="
           background-color: red;
           color: White;
@@ -33,13 +33,35 @@
       >
         CURRENT TASKS:
       </p>
-      <div id="greetingsPrint"></div>
+      <div id="ToDosPrint"></div>
     </main>
     <script>
-      // Classic Hello World
-      let greetings = [];
+      //Model ----------
+      let ToDos;
 
-      function printHelloWorld(text, index) {
+      //IF LOCAL STORAGE HAS A previous array stored.
+
+      const savedToDos = JSON.parse(localStorage.getItem("todos"));
+
+      //If the parsed JSON can be read into an Array
+      if (Array.isArray(savedToDos)) {
+        ToDos = savedToDos;
+      } else {
+        ToDos = [];
+      }
+
+      function saveToDo() {
+        localStorage.setItem("todos", JSON.stringify(ToDos));
+      }
+      //render ALL of it bfore
+      renderAllToDos();
+      //VIEW
+
+      //RANDOM ARROW FUNCTION
+      const printHelloWorld = () => "Hello World";
+      console.log(printHelloWorld());
+
+      function printToDo(text, index) {
         const element = document.createElement("div");
         element.textContent =
           "Task " +
@@ -49,49 +71,68 @@
           " | Due Date: " +
           text.dueDate;
         element.setAttribute("style", "margin-bottom: 5px");
-        const greetingDiv = document.getElementById("greetingsPrint");
+        const greetingDiv = document.getElementById("ToDosPrint");
 
         const deleteTask = document.createElement("button");
         deleteTask.innerText = "Delete";
         deleteTask.style.marginLeft = "5px";
         deleteTask.style.cursor = "pointer";
-        deleteTask.addEventListener("click", removeTask);
+        deleteTask.addEventListener("click", deleteTaskFunc);
         deleteTask.id = text.id;
         element.appendChild(deleteTask);
         greetingDiv.appendChild(element);
       }
 
-      function renderAllGreetings() {
+      function resetInputs() {
+        const textInp = document.getElementById("Greeting");
+        const dateInp = document.getElementById("dateID");
+        //resets the input fields after printing cause this is called each time.
+
+        textInp.value = "";
+        dateInp.value = "";
+      }
+      function renderAllToDos() {
         //MAKE SURE WE WIPE THE SCREEN BEFORE.
-        document.getElementById("greetingsPrint").innerHTML = "";
-        greetings.forEach(printHelloWorld);
+        document.getElementById("ToDosPrint").innerHTML = "";
+        ToDos.forEach(printToDo);
+        resetInputs();
       }
 
-      function removeTask(event) {
-        console.log(event);
-        const toBeDeleted = event.target.id;
-        greetings = greetings.filter(function (item) {
-          if (item.id === toBeDeleted) {
+      //CONTROLLERS
+      function removeTask(idToRemove) {
+        ToDos = ToDos.filter(function (item) {
+          if (item.id === idToRemove) {
             return false;
           } else {
             return true;
           }
         });
-        renderAllGreetings();
+        saveToDo();
+      }
+      function deleteTaskFunc(event) {
+        // console.log(event);
+        const toBeDeleted = event.target.id;
+        removeTask(toBeDeleted);
+        renderAllToDos();
       }
 
-      function addGreeting() {
+      function createToDo(text, datePicked) {
+        return {
+          toDo: text,
+          dueDate: datePicked,
+          id: "" + new Date().getTime(),
+        };
+      }
+
+      function addToDo() {
         let text = document.getElementById("Greeting");
         text = text.value;
         let datePicked = document.getElementById("dateID");
         datePicked = datePicked.value;
 
-        greetings.push({
-          toDo: text,
-          dueDate: datePicked,
-          id: "" + new Date().getTime(),
-        });
-        renderAllGreetings();
+        ToDos.push(createToDo(text, datePicked));
+        saveToDo();
+        renderAllToDos();
       }
     </script>
   </body>
